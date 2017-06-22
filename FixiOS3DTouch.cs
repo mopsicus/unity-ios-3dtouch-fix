@@ -25,7 +25,7 @@ public class iOSPostBuildProcess {
 		if (File.Exists(filePath)) {
 			string classFile = File.ReadAllText(filePath);
 			string newClassFile = classFile.Replace (targetString, "[self onUpdateSurfaceSize:frame.size];\n\rUILongPressGestureRecognizer *longPR = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:NULL];\nlongPR.delaysTouchesBegan = false;\nlongPR.minimumPressDuration = 0;\nlongPR.delegate = self;\n[self addGestureRecognizer:longPR];");
-			newClassFile = newClassFile.Replace (targetString2, "- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {\nCGPoint point= [touch locationInView:touch.view];\nif (point.x < 35) {\nNSSet *set = [NSSet setWithObjects:touch, nil];\nUnitySendTouchesBegin(set, NULL);\n}\n}\n\r- (void)touchesBegan");
+			newClassFile = newClassFile.Replace (targetString2, "- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {\nif ([[self traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable) {\nCGPoint point= [touch locationInView:touch.view];\nif (point.x < 35) {\nNSSet *set = [NSSet setWithObjects:touch, nil];\nUnitySendTouchesBegin(set, NULL);\n}\n}\n}\n\r- (void)touchesBegan");
 			if (classFile.Length != newClassFile.Length) {
 				File.WriteAllText(filePath, newClassFile);    
 				Debug.Log("Fix3DTouchDelay succeeded for file: " + filePath);
